@@ -8,12 +8,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
     List<Note> notes = new ArrayList<>();
+    OnItemClickListener listener;
+
+    public void setOnItemClickListerne(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Note note);
+    }
 
     class NoteHolder extends RecyclerView.ViewHolder{
         private TextView title;
@@ -25,6 +33,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteHolder> {
             title = itemView.findViewById(R.id.title);
             description = itemView.findViewById(R.id.description);
             priority = itemView.findViewById(R.id.priority);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (listener != null && position != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(notes.get(position));
+                    }
+                }
+            });
         }
     }
 

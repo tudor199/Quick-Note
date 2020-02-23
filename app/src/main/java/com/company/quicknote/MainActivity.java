@@ -1,5 +1,10 @@
 package com.company.quicknote;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,13 +13,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.fab_add_note).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddNoteActivity.class);
+                Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
                 startActivityForResult(intent, Constants.REQUEST_CODE_ADD_NOTE);
             }
         });
@@ -63,7 +61,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
 
-        
+        adapter.setOnItemClickListerne(new NoteAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Note note) {
+                Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
+                intent.putExtra(Constants.KEY_ID, note.getId());
+                intent.putExtra(Constants.KEY_TITLE, note.getTitle());
+                intent.putExtra(Constants.KEY_DESCRIPTION, note.getDescription());
+                intent.putExtra(Constants.KEY_PRIORITY, note.getPriority());
+                startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_NOTE);
+            }
+        });
+
+
     }
 
     @Override
@@ -71,17 +81,28 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == Constants.REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             String title = data.getStringExtra(Constants.KEY_TITLE);
             String description = data.getStringExtra(Constants.KEY_DESCRIPTION);
-            int priority = data.getIntExtra(Constants.KEY_PRIORITY, -1);
+            int priority = data.getIntExtra(Constants.KEY_PRIORITY, 1);
 
-            noteViewModel.insert(new Note(title, description, priority));
+            Note note = new Note(title, description, priority);
+            noteViewModel.insert(note);
 
             Toast.makeText(this, "Note has been saved successful!", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (requestCode == Constants.REQUEST_CODE_EDIT_NOTE && resultCode == RESULT_OK) {
+            int id = data.getIntExtra(Constants.KEY_ID, -1);
+            String title = data.getStringExtra(Constants.KEY_TITLE);
+            String description = data.getStringExtra(Constants.KEY_DESCRIPTION);
+            int priority = data.getIntExtra(Constants.KEY_PRIORITY, 1);
 
+            Note note = new Note(title, description, priority);
+            note.setId(id);
+            noteViewModel.update(note);
+
+            Toast.makeText(this, "Note has been updated successful!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Toast.makeText(this, "No modification has been made!", Toast.LENGTH_SHORT).show();
-        
-        
         super.onActivityResult(requestCode, resultCode, data);
     }
 }

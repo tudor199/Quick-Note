@@ -12,16 +12,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class AddNoteActivity extends AppCompatActivity {
-    EditText texTitle;
-    EditText textDescription;
-    NumberPicker pickerPriority;
+public class NoteEditorActivity extends AppCompatActivity {
+    private int id;
 
+    private EditText texTitle;
+    private EditText textDescription;
+    private NumberPicker pickerPriority;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_note);
+        setContentView(R.layout.activity_note_editor);
 
         texTitle = findViewById(R.id.title);
         textDescription = findViewById(R.id.description);
@@ -30,9 +31,18 @@ public class AddNoteActivity extends AppCompatActivity {
         pickerPriority.setMinValue(1);
         pickerPriority.setMaxValue(10);
 
-
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-        setTitle("Add Note");
+
+        Intent intent = getIntent();
+        id = intent.getIntExtra(Constants.KEY_ID, -1);
+        if (id == -1) {
+            setTitle("Add Note");
+        } else {
+            setTitle("Edit Note");
+            texTitle.setText(intent.getStringExtra(Constants.KEY_TITLE));
+            textDescription.setText(intent.getStringExtra(Constants.KEY_DESCRIPTION));
+            pickerPriority.setValue(intent.getIntExtra(Constants.KEY_PRIORITY, 1));
+        }
     }
 
     private void saveNote() {
@@ -46,6 +56,7 @@ public class AddNoteActivity extends AppCompatActivity {
         }
 
         Intent data = new Intent();
+        data.putExtra(Constants.KEY_ID, id);
         data.putExtra(Constants.KEY_TITLE, title);
         data.putExtra(Constants.KEY_DESCRIPTION, description);
         data.putExtra(Constants.KEY_PRIORITY, priority);
