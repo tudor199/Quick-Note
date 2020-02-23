@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         noteViewModel.getAllNotes().observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notes) {
-                adapter.setNotes(notes);
+                adapter.submitList(notes);
             }
         });
 
@@ -72,8 +72,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_NOTE);
             }
         });
-
-
     }
 
     @Override
