@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.company.quicknote.common.Constants;
+
 public class NoteEditorActivity extends AppCompatActivity {
     private int id;
 

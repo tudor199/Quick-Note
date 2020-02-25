@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.company.quicknote.adapter.NoteAdapter;
+import com.company.quicknote.common.Constants;
+import com.company.quicknote.entity.Note;
+import com.company.quicknote.viewModel.NoteViewModel;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {

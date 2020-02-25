@@ -1,10 +1,13 @@
-package com.company.quicknote;
+package com.company.quicknote.database;
 
 import android.content.Context;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+
+import com.company.quicknote.dao.NoteDao;
+import com.company.quicknote.entity.Note;
 
 @Database(entities = {Note.class}, version = 1)
 public abstract class NoteDatabase extends RoomDatabase {

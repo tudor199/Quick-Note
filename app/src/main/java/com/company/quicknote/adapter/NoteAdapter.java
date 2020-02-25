@@ -1,4 +1,4 @@
-package com.company.quicknote;
+package com.company.quicknote.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.company.quicknote.R;
+import com.company.quicknote.entity.Note;
 
 public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> {
     OnItemClickListener listener;

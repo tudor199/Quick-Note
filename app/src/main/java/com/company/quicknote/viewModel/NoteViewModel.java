@@ -1,10 +1,13 @@
-package com.company.quicknote;
+package com.company.quicknote.viewModel;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+
+import com.company.quicknote.entity.Note;
+import com.company.quicknote.repository.NoteRepository;
 
 import java.util.List;
 

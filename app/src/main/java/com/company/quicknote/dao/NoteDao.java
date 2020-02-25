@@ -1,4 +1,4 @@
-package com.company.quicknote;
+package com.company.quicknote.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -6,6 +6,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import com.company.quicknote.entity.Note;
 
 import java.util.List;
 

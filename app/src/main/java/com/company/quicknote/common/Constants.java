@@ -1,4 +1,4 @@
-package com.company.quicknote;
+package com.company.quicknote.common;
 
 public class Constants {
     public static final int REQUEST_CODE_ADD_NOTE = 101;

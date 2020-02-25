@@ -1,4 +1,4 @@
-package com.company.quicknote;
+package com.company.quicknote.entity;
 
 
 import androidx.room.Entity;

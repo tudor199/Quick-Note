@@ -1,9 +1,13 @@
-package com.company.quicknote;
+package com.company.quicknote.repository;
 
 import android.app.Application;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
+
+import com.company.quicknote.dao.NoteDao;
+import com.company.quicknote.database.NoteDatabase;
+import com.company.quicknote.entity.Note;
 
 import java.util.List;
 
