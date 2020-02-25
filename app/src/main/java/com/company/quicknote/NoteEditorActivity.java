@@ -35,6 +35,7 @@ public class NoteEditorActivity extends AppCompatActivity {
         textPriority = findViewById(R.id.priority_text);
         seekPriority = findViewById(R.id.priority_seekbar);
 
+        seekPriority.setMax(10);
         seekPriority.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -89,6 +90,7 @@ public class NoteEditorActivity extends AppCompatActivity {
             seekPriority.setProgress(intent.getIntExtra(Constants.KEY_PRIORITY, 1));
             textDescription.requestFocus();
         }
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     private void saveNote() {
