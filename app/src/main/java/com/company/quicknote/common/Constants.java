@@ -8,4 +8,6 @@ public class Constants {
     public static final String KEY_TITLE = "NoteEditor.TTTLE";
     public static final String KEY_DESCRIPTION = "NoteEditor.DESCRIPTION";
     public static final String KEY_PRIORITY = "NoteEditor.PRIORITY";
+
+    public static final int MAX_COMMANDS_ON_STACK = 10;
 }
