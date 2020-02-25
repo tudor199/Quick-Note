@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
@@ -37,12 +38,16 @@ public class NoteEditorActivity extends AppCompatActivity {
         id = intent.getIntExtra(Constants.KEY_ID, -1);
         if (id == -1) {
             setTitle("Add Note");
+            pickerPriority.setValue(5);
+            texTitle.requestFocus();
         } else {
             setTitle("Edit Note");
             texTitle.setText(intent.getStringExtra(Constants.KEY_TITLE));
             textDescription.setText(intent.getStringExtra(Constants.KEY_DESCRIPTION));
             pickerPriority.setValue(intent.getIntExtra(Constants.KEY_PRIORITY, 1));
+            textDescription.requestFocus();
         }
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     private void saveNote() {
