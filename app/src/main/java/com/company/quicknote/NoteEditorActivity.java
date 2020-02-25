@@ -16,9 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.company.quicknote.common.Constants;
+import com.company.quicknote.entity.Note;
 
 public class NoteEditorActivity extends AppCompatActivity {
-    private int id;
+    private long id;
+
+    Intent intent;
 
     private EditText texTitle;
     private EditText textDescription;
@@ -79,17 +82,18 @@ public class NoteEditorActivity extends AppCompatActivity {
         seekPriority.setMax(10);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
-        Intent intent = getIntent();
-        id = intent.getIntExtra(Constants.KEY_ID, -1);
-        if (id == -1) {
+        intent = getIntent();
+        Note note = intent.getParcelableExtra(Constants.KEY_OLD_NOTE);
+        if (note == null) {
             setTitle("Add Note");
             seekPriority.setProgress(5);
             texTitle.requestFocus();
         } else {
             setTitle("Edit Note");
-            texTitle.setText(intent.getStringExtra(Constants.KEY_TITLE));
-            textDescription.setText(intent.getStringExtra(Constants.KEY_DESCRIPTION));
-            seekPriority.setProgress(intent.getIntExtra(Constants.KEY_PRIORITY, 1));
+            id = note.getId();
+            texTitle.setText(note.getTitle());
+            textDescription.setText(note.getDescription());
+            seekPriority.setProgress(note.getPriority());
             textDescription.requestFocus();
         }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -105,12 +109,10 @@ public class NoteEditorActivity extends AppCompatActivity {
             return;
         }
 
-        Intent data = new Intent();
-        data.putExtra(Constants.KEY_ID, id);
-        data.putExtra(Constants.KEY_TITLE, title);
-        data.putExtra(Constants.KEY_DESCRIPTION, description);
-        data.putExtra(Constants.KEY_PRIORITY, priority);
-        setResult(RESULT_OK, data);
+        Note note = new Note(title, description, priority);
+        note.setId(id);
+        intent.putExtra(Constants.KEY_NEW_NOTE, note);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

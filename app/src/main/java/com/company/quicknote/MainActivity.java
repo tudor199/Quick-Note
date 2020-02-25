@@ -16,11 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.company.quicknote.adapter.NoteAdapter;
 import com.company.quicknote.common.Constants;
+import com.company.quicknote.common.UserAction;
 import com.company.quicknote.entity.Note;
 import com.company.quicknote.undo.AddCommand;
 import com.company.quicknote.undo.CommandStack;
-import com.company.quicknote.undo.DeleteCommand;
-import com.company.quicknote.undo.EditCommand;
 import com.company.quicknote.viewModel.NoteViewModel;
 
 import java.util.List;
@@ -55,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
+//                intentputextra keyactioncode;
                 startActivityForResult(intent, Constants.REQUEST_CODE_ADD_NOTE);
             }
         });
@@ -84,10 +84,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Note note) {
                 Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
-                intent.putExtra(Constants.KEY_ID, note.getId());
-                intent.putExtra(Constants.KEY_TITLE, note.getTitle());
-                intent.putExtra(Constants.KEY_DESCRIPTION, note.getDescription());
-                intent.putExtra(Constants.KEY_PRIORITY, note.getPriority());
+                intent.putExtra(Constants.KEY_ACTION, UserAction.Add);
+                intent.putExtra(Constants.KEY_OLD_NOTE, note);
                 startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_NOTE);
             }
         });
@@ -96,24 +94,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == Constants.REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(Constants.KEY_TITLE);
-            String description = data.getStringExtra(Constants.KEY_DESCRIPTION);
-            int priority = data.getIntExtra(Constants.KEY_PRIORITY, 1);
+            Note note = data.getParcelableExtra(Constants.KEY_NEW_NOTE);
 
-            Note note = new Note(title, description, priority);
             noteViewModel.insert(note);
 
             Toast.makeText(this, "Note has been saved successful!", Toast.LENGTH_SHORT).show();
             return;
         }
         if (requestCode == Constants.REQUEST_CODE_EDIT_NOTE && resultCode == RESULT_OK) {
-            int id = data.getIntExtra(Constants.KEY_ID, -1);
-            String title = data.getStringExtra(Constants.KEY_TITLE);
-            String description = data.getStringExtra(Constants.KEY_DESCRIPTION);
-            int priority = data.getIntExtra(Constants.KEY_PRIORITY, 1);
-
-            Note note = new Note(title, description, priority);
-            note.setId(id);
+            Note note = data.getParcelableExtra(Constants.KEY_NEW_NOTE);
             noteViewModel.update(note);
 
             Toast.makeText(this, "Note has been updated successful!", Toast.LENGTH_SHORT).show();
