@@ -2,10 +2,10 @@ package com.company.quicknote;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -15,10 +15,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.company.quicknote.common.Constants;
+import com.company.quicknote.common.Constant;
+import com.company.quicknote.common.UserAction;
+import com.company.quicknote.entity.Note;
 
 public class NoteEditorActivity extends AppCompatActivity {
-    private int id;
+    private Intent intent;
+    private UserAction action;
+    private Note oldNote;
+
+    private boolean doubleBackToExitPressedOnce;
 
     private EditText texTitle;
     private EditText textDescription;
@@ -79,18 +85,25 @@ public class NoteEditorActivity extends AppCompatActivity {
         seekPriority.setMax(10);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
-        Intent intent = getIntent();
-        id = intent.getIntExtra(Constants.KEY_ID, -1);
-        if (id == -1) {
-            setTitle("Add Note");
-            seekPriority.setProgress(5);
-            texTitle.requestFocus();
-        } else {
-            setTitle("Edit Note");
-            texTitle.setText(intent.getStringExtra(Constants.KEY_TITLE));
-            textDescription.setText(intent.getStringExtra(Constants.KEY_DESCRIPTION));
-            seekPriority.setProgress(intent.getIntExtra(Constants.KEY_PRIORITY, 1));
-            textDescription.requestFocus();
+        intent = getIntent();
+        action = (UserAction) intent.getSerializableExtra(Constant.KEY_ACTION);
+        oldNote = intent.getParcelableExtra(Constant.KEY_OLD_NOTE);
+        switch (action) {
+            case Add:
+                setTitle("Add Note");
+                seekPriority.setProgress(5);
+                texTitle.requestFocus();
+                break;
+            case Edit:
+                setTitle("Edit Note");
+                texTitle.setText(oldNote.getTitle());
+                textDescription.setText(oldNote.getDescription());
+                textPriority.setText(String.valueOf(oldNote.getPriority()));
+                textDescription.requestFocus();
+                break;
+            default:
+                setResult(RESULT_CANCELED, intent);
+                finish();
         }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
@@ -105,19 +118,18 @@ public class NoteEditorActivity extends AppCompatActivity {
             return;
         }
 
-        Intent data = new Intent();
-        data.putExtra(Constants.KEY_ID, id);
-        data.putExtra(Constants.KEY_TITLE, title);
-        data.putExtra(Constants.KEY_DESCRIPTION, description);
-        data.putExtra(Constants.KEY_PRIORITY, priority);
-        setResult(RESULT_OK, data);
+        Note note = new Note(title, description, priority);
+        if (action == UserAction.Edit) {
+            note.setId(oldNote.getId());
+        }
+        intent.putExtra(Constant.KEY_NEW_NOTE, note);
+        setResult(RESULT_OK, intent);
         finish();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.save_menu, menu);
+        getMenuInflater().inflate(R.menu.save_menu, menu);
         return true;
     }
 
@@ -130,5 +142,25 @@ public class NoteEditorActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "If you go back, your changes will not be saved !", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, Constant.DOUBLE_BACK_DELAY_MS);
     }
 }
