@@ -2,6 +2,7 @@ package com.company.quicknote;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.company.quicknote.adapter.NoteAdapter;
-import com.company.quicknote.common.Constants;
+import com.company.quicknote.common.Constant;
 import com.company.quicknote.common.UserAction;
 import com.company.quicknote.entity.Note;
 import com.company.quicknote.undo.AddCommand;
@@ -31,6 +32,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private NoteViewModel noteViewModel;
     private CommandStack commandStack;
+
+    private boolean doubleBackToExitPressedOnce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 addButton.setEnabled(false);
                 Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
-                intent.putExtra(Constants.KEY_ACTION, UserAction.Add);
-                startActivityForResult(intent, Constants.REQUEST_CODE_ADD_NOTE);
+                intent.putExtra(Constant.KEY_ACTION, UserAction.Add);
+                startActivityForResult(intent, Constant.REQUEST_CODE_ADD_NOTE);
                 addButton.setEnabled(true);
             }
         });
@@ -85,30 +88,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Note note) {
                 Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
-                intent.putExtra(Constants.KEY_ACTION, UserAction.Edit);
-                intent.putExtra(Constants.KEY_OLD_NOTE, note);
-                startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_NOTE);
+                intent.putExtra(Constant.KEY_ACTION, UserAction.Edit);
+                intent.putExtra(Constant.KEY_OLD_NOTE, note);
+                startActivityForResult(intent, Constant.REQUEST_CODE_EDIT_NOTE);
             }
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == Constants.REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
-            Note note = data.getParcelableExtra(Constants.KEY_NEW_NOTE);
+        if (requestCode == Constant.REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
+            Note note = data.getParcelableExtra(Constant.KEY_NEW_NOTE);
 
             noteViewModel.insert(note);
             commandStack.clear();
 
-            Toast.makeText(this, "Note has been saved successful!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Note has been saved successfully!", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (requestCode == Constants.REQUEST_CODE_EDIT_NOTE && resultCode == RESULT_OK) {
-            Note note = data.getParcelableExtra(Constants.KEY_NEW_NOTE);
+        if (requestCode == Constant.REQUEST_CODE_EDIT_NOTE && resultCode == RESULT_OK) {
+            Note note = data.getParcelableExtra(Constant.KEY_NEW_NOTE);
             noteViewModel.update(note);
-            commandStack.push(new EditCommand(noteViewModel, (Note) data.getParcelableExtra(Constants.KEY_OLD_NOTE)));
+            commandStack.push(new EditCommand(noteViewModel, (Note) data.getParcelableExtra(Constant.KEY_OLD_NOTE)));
 
-            Toast.makeText(this, "Note has been updated successful!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Note has been updated successfully!", Toast.LENGTH_SHORT).show();
             return;
         }
         Toast.makeText(this, "No modification has been made!", Toast.LENGTH_SHORT).show();
@@ -125,10 +128,31 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_undo:
-                commandStack.executeLastCommand();
+                if (!commandStack.executeLastCommand()) {
+                    Toast.makeText(this, "There are no more actions to undo!", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please press back again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, Constant.DOUBLE_BACK_DELAY_MS);
     }
 }

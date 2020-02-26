@@ -2,10 +2,10 @@ package com.company.quicknote;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -15,14 +15,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.company.quicknote.common.Constants;
+import com.company.quicknote.common.Constant;
 import com.company.quicknote.common.UserAction;
 import com.company.quicknote.entity.Note;
 
 public class NoteEditorActivity extends AppCompatActivity {
-    private long id;
+    private Intent intent;
+    private UserAction action;
+    private Note oldNote;
 
-    Intent intent;
+    private boolean doubleBackToExitPressedOnce;
 
     private EditText texTitle;
     private EditText textDescription;
@@ -84,8 +86,8 @@ public class NoteEditorActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         intent = getIntent();
-        UserAction action = (UserAction) intent.getSerializableExtra(Constants.KEY_ACTION);
-        Note note = intent.getParcelableExtra(Constants.KEY_OLD_NOTE);
+        action = (UserAction) intent.getSerializableExtra(Constant.KEY_ACTION);
+        oldNote = intent.getParcelableExtra(Constant.KEY_OLD_NOTE);
         switch (action) {
             case Add:
                 setTitle("Add Note");
@@ -94,10 +96,9 @@ public class NoteEditorActivity extends AppCompatActivity {
                 break;
             case Edit:
                 setTitle("Edit Note");
-                id = note.getId();
-                texTitle.setText(note.getTitle());
-                textDescription.setText(note.getDescription());
-                textPriority.setText(String.valueOf(note.getPriority()));
+                texTitle.setText(oldNote.getTitle());
+                textDescription.setText(oldNote.getDescription());
+                textPriority.setText(String.valueOf(oldNote.getPriority()));
                 textDescription.requestFocus();
                 break;
             default:
@@ -118,8 +119,10 @@ public class NoteEditorActivity extends AppCompatActivity {
         }
 
         Note note = new Note(title, description, priority);
-        note.setId(id);
-        intent.putExtra(Constants.KEY_NEW_NOTE, note);
+        if (action == UserAction.Edit) {
+            note.setId(oldNote.getId());
+        }
+        intent.putExtra(Constant.KEY_NEW_NOTE, note);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -139,5 +142,25 @@ public class NoteEditorActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "If you go back, your changes will not be saved !", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, Constant.DOUBLE_BACK_DELAY_MS);
     }
 }
