@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.company.quicknote.common.Constants;
+import com.company.quicknote.common.UserAction;
 import com.company.quicknote.entity.Note;
 
 public class NoteEditorActivity extends AppCompatActivity {
@@ -83,18 +84,25 @@ public class NoteEditorActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         intent = getIntent();
+        UserAction action = (UserAction) intent.getSerializableExtra(Constants.KEY_ACTION);
         Note note = intent.getParcelableExtra(Constants.KEY_OLD_NOTE);
-        if (note == null) {
-            setTitle("Add Note");
-            seekPriority.setProgress(5);
-            texTitle.requestFocus();
-        } else {
-            setTitle("Edit Note");
-            id = note.getId();
-            texTitle.setText(note.getTitle());
-            textDescription.setText(note.getDescription());
-            seekPriority.setProgress(note.getPriority());
-            textDescription.requestFocus();
+        switch (action) {
+            case Add:
+                setTitle("Add Note");
+                seekPriority.setProgress(5);
+                texTitle.requestFocus();
+                break;
+            case Edit:
+                setTitle("Edit Note");
+                id = note.getId();
+                texTitle.setText(note.getTitle());
+                textDescription.setText(note.getDescription());
+                textPriority.setText(String.valueOf(note.getPriority()));
+                textDescription.requestFocus();
+                break;
+            default:
+                setResult(RESULT_CANCELED, intent);
+                finish();
         }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }

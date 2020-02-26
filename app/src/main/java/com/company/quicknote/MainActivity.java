@@ -22,6 +22,7 @@ import com.company.quicknote.undo.AddCommand;
 import com.company.quicknote.undo.CommandStack;
 import com.company.quicknote.undo.EditCommand;
 import com.company.quicknote.viewModel.NoteViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -51,15 +52,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.fab_add_note).setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton addButton = findViewById(R.id.fab_add_note);
+        final FloatingActionButton undoButton = findViewById(R.id.fab_undo);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addButton.setEnabled(false);
                 Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
-//                intentputextra keyactioncode;
+                intent.putExtra(Constants.KEY_ACTION, UserAction.Add);
                 startActivityForResult(intent, Constants.REQUEST_CODE_ADD_NOTE);
+                addButton.setEnabled(true);
             }
         });
-        findViewById(R.id.fab_undo).setOnClickListener(new View.OnClickListener() {
+        undoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 commandStack.executeLastCommand();
@@ -85,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Note note) {
                 Intent intent = new Intent(MainActivity.this, NoteEditorActivity.class);
-                intent.putExtra(Constants.KEY_ACTION, UserAction.Add);
+                intent.putExtra(Constants.KEY_ACTION, UserAction.Edit);
                 intent.putExtra(Constants.KEY_OLD_NOTE, note);
                 startActivityForResult(intent, Constants.REQUEST_CODE_EDIT_NOTE);
             }
@@ -98,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             Note note = data.getParcelableExtra(Constants.KEY_NEW_NOTE);
 
             noteViewModel.insert(note);
+            commandStack.clear();
 
             Toast.makeText(this, "Note has been saved successful!", Toast.LENGTH_SHORT).show();
             return;
