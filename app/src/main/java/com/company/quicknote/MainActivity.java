@@ -20,6 +20,7 @@ import com.company.quicknote.common.UserAction;
 import com.company.quicknote.entity.Note;
 import com.company.quicknote.undo.AddCommand;
 import com.company.quicknote.undo.CommandStack;
+import com.company.quicknote.undo.EditCommand;
 import com.company.quicknote.viewModel.NoteViewModel;
 
 import java.util.List;
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == Constants.REQUEST_CODE_EDIT_NOTE && resultCode == RESULT_OK) {
             Note note = data.getParcelableExtra(Constants.KEY_NEW_NOTE);
             noteViewModel.update(note);
+            commandStack.push(new EditCommand(noteViewModel, (Note) data.getParcelableExtra(Constants.KEY_OLD_NOTE)));
 
             Toast.makeText(this, "Note has been updated successful!", Toast.LENGTH_SHORT).show();
             return;

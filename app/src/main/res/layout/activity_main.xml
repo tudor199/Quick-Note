@@ -25,6 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_close" />
+        android:src="@drawable/ic_arrow_back" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
