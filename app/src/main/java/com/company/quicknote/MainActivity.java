@@ -2,6 +2,8 @@ package com.company.quicknote;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -53,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final FloatingActionButton addButton = findViewById(R.id.fab_add_note);
-        final FloatingActionButton undoButton = findViewById(R.id.fab_undo);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,12 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(Constants.KEY_ACTION, UserAction.Add);
                 startActivityForResult(intent, Constants.REQUEST_CODE_ADD_NOTE);
                 addButton.setEnabled(true);
-            }
-        });
-        undoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                commandStack.executeLastCommand();
             }
         });
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -118,5 +113,22 @@ public class MainActivity extends AppCompatActivity {
         }
         Toast.makeText(this, "No modification has been made!", Toast.LENGTH_SHORT).show();
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.undo_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_undo:
+                commandStack.executeLastCommand();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
