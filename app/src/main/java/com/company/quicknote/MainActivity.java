@@ -96,6 +96,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.undo_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_undo:
+                if (!commandStack.executeLastCommand()) {
+                    Toast.makeText(this, "There are no more actions to undo!", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == Constant.REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             Note note = data.getParcelableExtra(Constant.KEY_NEW_NOTE);
@@ -116,25 +135,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Toast.makeText(this, "No modification has been made!", Toast.LENGTH_SHORT).show();
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.undo_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_undo:
-                if (!commandStack.executeLastCommand()) {
-                    Toast.makeText(this, "There are no more actions to undo!", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
