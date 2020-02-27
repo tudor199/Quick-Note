@@ -16,7 +16,6 @@ public class Note implements Parcelable {
     private int priority;
 
     public Note(String title, String description, int priority) {
-        this.id = -1;
         this.title = title;
         this.description = description;
         this.priority = priority;

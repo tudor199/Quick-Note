@@ -46,6 +46,7 @@ public class NoteRepository {
 
         @Override
         protected Void doInBackground(Note... notes) {
+            Note note = notes[0];
             noteDao.insert(notes[0]);
             return null;
         }
